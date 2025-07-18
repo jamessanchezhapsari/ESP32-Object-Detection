@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP32 Live Feed</title>
+</head>
+<body>
+
+  <h2>ESP32 Live Camera Feed</h2>
+  
+  <img id="video_stream" src="{{stream_url}}" width="640" height="480" onerror="show_error()">
+
+  <p id="offline_msg" style="display:none;"> Camera is offline </p>
+
+  <script>
+    // shows error message when stream fails with style.display
+    // tries to reconnect every 10 seconds
+    function show_error(){
+      const video_stream = document.getElementById("video_stream");
+      const offline_msg = document.getElementById("offline_msg");
+
+      video_stream.style.display = "none";
+      offline_msg.style.display = "block";
+      offline_msg.innerText = "Attempting refresh in 10s"
+
+      setTimeout(() => {
+        // trick to refresh only video_stream element instead of whole page with location.reload();
+        // also avoids resetting connection to esp32 camera
+        video_stream.src = video_stream.src + "?" + new Date().getTime();
+        video_stream.style.display = "block";
+        offline_msg.style.display = "none";
+      }, 10000)
+    }
+  </script>
+
+</body>
+</html>
