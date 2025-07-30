@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8">
+  <title>ESP32 Camera Dashboard</title>
+  <!-- Use tailwind CSS + alpine JS -->
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <link href="./static/styles/output.css" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-800 text-gray-800">
+
+  <!-- Top Navbar -->
+  <nav class="bg-white dark:bg-gray-700 shadow flex items-center justify-between px-4 py-3">
+    <a href={{icon_route}} class="text-gray-600 dark:text-gray-300 hover:text-gray-900">
+      <!-- Home Icon (SVG) -->
+      {% block svg_icon %}{% endblock %}
+    </a>
+    <h1 class="text-xl font-semibold text-gray-700 dark:text-gray-200">{% block page_title %}{% endblock %}</h1>
+    <div class="w-6"></div> <!-- spacing -->
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    {% block main_content %}{% endblock %}
+  </main>
+
+</body>
+
+</html>

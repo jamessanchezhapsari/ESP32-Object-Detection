@@ -1,0 +1,25 @@
+# Python, secret keys
+__pycache__/
+*.py[cod]
+.env
+*.env
+.venv/
+venv/   
+credentials.h
+
+# Node
+node_modules/
+dist/
+build/
+*.log
+
+# vscode
+.vscode/
+
+# yolo
+*.pt
+
+# os
+.DS_Store
+Thumbs.db
+enthumbs.db

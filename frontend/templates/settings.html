@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block svg_icon %}
+<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="currentColor" viewBox="0 0 495.398 495.398">
+<!-- Copied from svg I found online, inline svg makes life easier with darkmode -->
+<path d="M487.083,225.514l-75.08-75.08V63.704c0-15.682-12.708-28.391-28.413-28.391c-15.669,0-28.377,12.709-28.377,28.391
+        v29.941L299.31,37.74c-27.639-27.624-75.694-27.575-103.27,0.05L8.312,225.514c-11.082,11.104-11.082,29.071,0,40.158
+        c11.087,11.101,29.089,11.101,40.172,0l187.71-187.729c6.115-6.083,16.893-6.083,22.976-0.018l187.742,187.747
+        c5.567,5.551,12.825,8.312,20.081,8.312c7.271,0,14.541-2.764,20.091-8.312C498.17,254.586,498.17,236.619,487.083,225.514z"/>
+    <path d="M257.561,131.836c-5.454-5.451-14.285-5.451-19.723,0L72.712,296.913c-2.607,2.606-4.085,6.164-4.085,9.877v120.401
+        c0,28.253,22.908,51.16,51.16,51.16h81.754v-126.61h92.299v126.61h81.755c28.251,0,51.159-22.907,51.159-51.159V306.79
+        c0-3.713-1.465-7.271-4.085-9.877L257.561,131.836z"/>
+</svg>
+{% endblock %}
+
+{% block page_title %} Settings {% endblock %}
+
+{% block main_content %}
+<div class="flex justify-center items-start mt-10"
+x-data="{ debounceThresh: 3, minCount: 0, maxCount: 100, errors: {}, success: false,
+    darkMode: true, objCount: true, telegramNotif: true,
+    
+    updateSettings(){
+        // Send settings to backend thru /update-settings
+        fetch(
+            'update-settings', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    telegramNotif: this.telegramNotif,
+                    debounceThresh: this.debounceThresh,
+                    minCount: this.minCount,
+                    maxCount: this.maxCount
+                })
+            }
+        );
+    },
+    
+    saveSettings(){
+        // Save to local storage, persist when browser/tab closes
+        localStorage.setItem('settings', JSON.stringify({
+            debounceThresh: this.debounceThresh,
+            minCount: this.minCount,
+            maxCount: this.maxCount,
+            darkMode: this.darkMode,
+            objCount: this.objCount,
+            telegramNotif: this.telegramNotif
+        }));
+
+        this.updateSettings();
+    },
+    
+    validateInputSave(){
+                    // Function used by Save Button 
+        this.errors = {};    
+        this.success = false;
+        
+        if(this.debounceThresh === null) this.errors.debounceThresh = 'Must be a number';
+        else if(this.debounceThresh < 0) this.errors.debounceThresh = 'Must be >= 0';
+        
+        if(this.minCount === null) this.errors.minCount = 'Must be a number';
+        else if(this.minCount < 0) this.errors.minCount = 'Must be ≥ 0';
+        
+        if(this.maxCount === null) this.errors.maxCount = 'Must be a number';
+        else if(this.maxCount < this.minCount) this.errors.maxCount = 'Must be ≥ min';
+
+        if(Object.keys(this.errors).length === 0){
+            this.success = true;
+            this.saveSettings();
+
+            setTimeout(() => this.success = false, 2000);
+        }
+    },
+
+    toggleDarkMode(){
+        // document.documentElement refers to <html> tag
+        document.documentElement.classList.toggle('dark', this.darkMode);
+    },
+    
+    loadSettings(){
+        // function to load settings on start
+        const savedSettings = JSON.parse(localStorage.getItem('settings'));
+        if(savedSettings){
+            this.debounceThresh = savedSettings.debounceThresh;
+            this.minCount = savedSettings.minCount;
+            this.maxCount = savedSettings.maxCount;
+            this.darkMode = savedSettings.darkMode;
+            this.objCount = savedSettings.objCount;
+            this.telegramNotif = savedSettings.telegramNotif;
+        }
+
+        this.toggleDarkMode();
+        this.updateSettings();
+    }
+
+}" x-init="loadSettings()">
+  <div class="w-full max-w-md space-y-6">
+
+    <!-- Basic Settings -->
+    <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+      <span class="text-lg text-gray-700 dark:text-gray-200">Dark Mode:</span>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" x-model="darkMode" class="sr-only peer" @click="darkMode=!darkMode; toggleDarkMode(); saveSettings();">
+        <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-indigo-600 transition-colors"></div>
+        <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-full"></div>
+      </label>
+    </div>
+
+    <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+      <span class="text-lg text-gray-700 dark:text-gray-200">Obj Count:</span>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" x-model="objCount" class="sr-only peer" @click="objCount=!objCount; saveSettings();">
+        <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-indigo-600 transition-colors"></div>
+        <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-full"></div>
+      </label>
+    </div>
+
+    <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+      <span class="text-lg text-gray-700 dark:text-gray-200">Telegram Notification:</span>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" x-model="telegramNotif" class="sr-only peer" @click="telegramNotif=!telegramNotif; saveSettings();">
+        <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-indigo-600 transition-colors"></div>
+        <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-full"></div>
+      </label>
+    </div>
+
+    <!-- Declare showAdvanced variable -->
+    <div x-data="{ showAdvanced: false }"> 
+        <!-- Advanced Button -->
+        <div class="w-full flex justify-center mt-6 mb-2">
+            <button @click="showAdvanced = !showAdvanced" class="flex items-center text-sm text-blue-600 dark:text-indigo-600 hover:underline focus:outline-none transition">
+            <span>Advanced</span>
+            <svg :class="{ 'rotate-180': showAdvanced }" class="ml-1 w-4 h-4 transform transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.174l3.71-3.943a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+            </button>
+        </div>
+
+        <!-- Advanced Settings -->
+        <div x-show="showAdvanced" x-transition class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                <span class="text-lg text-gray-700 dark:text-gray-200">Debounce Threshold:</span>
+                <div class="flex items-center space-x-1">
+                    <!-- Make tooltip pos relative to input box -->
+                    <div class="relative"> 
+                        <input
+                            x-model.number="debounceThresh"
+                            type="number" min="0" step="0.1"
+                            :class="errors.debounceThresh ? 'border border-red-500' : 'border border-gray-300 dark:border-gray-600'"
+                            class="w-20 px-2 py-1 text-sm rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+                            @input="delete errors.debounceThresh"
+                        />
+                        <!-- Error tooltip popup -->
+                        <!-- Using x-cloak and x-transition: to hide ugly split second centering -->
+                        <div
+                            x-show="errors.debounceThresh"
+                            x-cloak
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                            class="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-max max-w-xs text-xs text-white bg-red-500 px-2 py-1 rounded shadow-lg z-10"
+                        >
+                            <span x-text="errors.debounceThresh"></span>
+                        </div>
+                    </div>
+                    <span class="text-gray-700 dark:text-gray-300">s</span>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                <span class="text-lg text-gray-700 dark:text-gray-200">Only Notify If Obj Count:</span>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <input
+                            x-model.number="minCount"
+                            type="number" min="0" :max="maxCount"
+                            :class="errors.minCount ? 'border border-red-500' : 'border border-gray-300 dark:border-gray-600'"
+                            class="w-16 px-2 py-1 text-sm rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+                            x-model.number="minCount"
+                            @input="delete errors.minCount"
+                        />
+                        <div
+                            x-show="errors.minCount"
+                            x-cloak
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                            class="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-max max-w-xs text-xs text-white bg-red-500 px-2 py-1 rounded shadow-lg z-10"
+                        >
+                            <span x-text="errors.minCount"></span>
+                        </div>
+                    </div>
+                    <span class="text-gray-700 dark:text-gray-300">to</span>
+                    <div class="relative">
+                        <input
+                            x-model.number="maxCount"
+                            type="number" :min="minCount"
+                            :class="errors.maxCount ? 'border border-red-500' : 'border border-gray-300 dark:border-gray-600'"
+                            class="w-16 px-2 py-1 text-sm rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+                            x-model.number="maxCount"
+                            @input="delete errors.maxCount"
+                        />
+                        <div
+                            x-show="errors.maxCount"
+                            x-cloak
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                            class="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-max max-w-xs text-xs text-white bg-red-500 px-2 py-1 rounded shadow-lg z-10"
+                        >
+                            <span x-text="errors.maxCount"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button & Reset to defaults button -->
+            <div class="text-center mt-4">
+                <button @click="validateInputSave()"
+                        class="px-4 py-2 bg-blue-600 dark:bg-indigo-600 text-white rounded hover:bg-blue-700 dark:hover:bg-indigo-700">
+                    Save
+                </button>
+
+                <button @click="localStorage.removeItem('advancedSettings'); debounceThresh = 3; minCount = 0; maxCount = 100;"
+                        class="ml-2 px-3 py-2 bg-gray-300 rounded hover:bg-gray-400 text-sm">
+                    Reset to Defaults
+                </button>
+
+                <p x-show="success" x-transition class="mt-2 text-green-600">Saved successfully!</p>
+            </div>
+
+
+        </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
