@@ -8,7 +8,7 @@ The frontend uses **Tailwind CSS** and **Alpine.js**.
 
 ## Video showcase ##
 
-wasdyuyuoin
+**TAKE VIDEO AND EMBED HERE**
 
 ## Items/programs you'll need
 - PC 
@@ -104,3 +104,7 @@ The job of the ESP32 instead is to take pictures in rapid succession and upload 
 ## License
 This project is licensed under GNU General Public License v3.0 
 See the [COPYING](COPYING) file for details.
+
+## Credits
+The code in `esp32_camera_webserver.ino` was written by Rui Santos and can be found at:
+https://randomnerdtutorials.com/esp32-cam-video-streaming-web-server-camera-home-assistant/
