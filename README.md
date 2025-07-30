@@ -6,6 +6,10 @@ The libraries/frameworks used include: **Flask, OpenCV, YOLO, the Python *reques
 
 The frontend uses **Tailwind CSS** and **Alpine.js**. 
 
+## Video showcase ##
+
+wasdyuyuoin
+
 ## Items/programs you'll need
 - PC 
 - ESP32 with camera attachment
@@ -96,3 +100,7 @@ The job of the ESP32 instead is to take pictures in rapid succession and upload 
 - Let user input credentials/keys in a nicer way than creating the files themselves
 - Add setting to change object of interest in web site
 - Train model to achieve higher accuracy and speed
+
+## License
+This project is licensed under GNU General Public License v3.0 
+See the [COPYING](COPYING) file for details.
