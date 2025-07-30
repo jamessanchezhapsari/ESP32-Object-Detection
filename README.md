@@ -2,9 +2,9 @@
 This program lets you use your ESP32 with a camera attachment to detect specific objects. A local webserver is created to display the stream in a simple dashboard which also has settings like enabling Telegram
 notifications if an object enters/leaves and changing the object detection behavior.
 
-The libraries/frameworks used include: Flask, OpenCV, YOLO, the Python *requests* library.
+The libraries/frameworks used include: **Flask, OpenCV, YOLO, the Python *requests* library**.
 
-The frontend uses Tailwind CSS and Alpine.js. 
+The frontend uses **Tailwind CSS** and **Alpine.js**. 
 
 ## Items/programs you'll need
 - PC 
@@ -83,8 +83,16 @@ To exit, spam Ctrl+C
 
 ## How it works
 
+### Project Diagram
+<img width="908" height="558" alt="esp32 proj diagram" src="https://github.com/user-attachments/assets/6105b7fa-5459-4993-884b-be25d36073b5" />
+
+Since the ESP32 hardware is too weak to run the YOLO object detection model, the PC takes care of that heavy load and also hosts the Flask webserver (`web_server.py`). If the PC has an Nvidia GPU, the YOLO can take advantage of CUDA to accelerate the object detection.
+
+The job of the ESP32 instead is to take pictures in rapid succession and upload them to its own webserver to create a video stream. The PC (in `object_detection.py`) then grabs those frames and processes them with YOLO. Once the bounding boxes are drawn with OpenCV, these final "*annotated*" frames are sent to the Flask webserver.
+
 ## Things to add in the future
 - Add a way to gracefully close the entire program instead of spamming Ctrl+C in the terminal
-- Create some sort of executable file to compress package and make running the program cleaner
+- Release project as actual website with user database and login system OR Create some sort of executable file to compress project and make running the program cleaner
 - Let user input credentials/keys in a nicer way than creating the files themselves
 - Add setting to change object of interest in web site
+- Train model to achieve higher accuracy and speed
