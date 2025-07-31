@@ -8,7 +8,7 @@ The frontend uses **Tailwind CSS** and **Alpine.js**.
 
 ## Video showcase ##
 
-**TAKE VIDEO AND EMBED HERE**
+https://www.youtube.com/watch?v=yadjT_B3W9Y
 
 ## Items/programs you'll need
 - PC 
